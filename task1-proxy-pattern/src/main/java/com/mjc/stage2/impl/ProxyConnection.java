@@ -7,11 +7,6 @@ public class ProxyConnection implements Connection {
     private RealConnection realConnection;
     private ConnectionPool connectionPool;
 
-    public ProxyConnection(RealConnection realConnection, ConnectionPool connectionPool) {
-        this.realConnection = realConnection;
-        this.connectionPool = connectionPool;
-    }
-
     public ProxyConnection(RealConnection realConnection) {
         this.realConnection = realConnection;
     }
@@ -25,7 +20,8 @@ public class ProxyConnection implements Connection {
     @Override
     public void close() {
         if (!realConnection.isClosed()) {
-            connectionPool.releaseConnection(realConnection); // Return connection to the pool
+            if (connectionPool==null) connectionPool = ConnectionPool.getInstance();
+            connectionPool.releaseConnection(this); // Return connection to the pool
         }
     }
 
